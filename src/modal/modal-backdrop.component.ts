@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 
 import { CLASS_NAME } from './modal-options.class';
 import { isBs3 } from '../utils/theme-provider';
@@ -8,10 +8,18 @@ import { Utils } from '../utils/utils.class';
 /** This component will be added as background layout for modals if enabled */
 @Component({
   selector: 'bs-modal-backdrop',
-  template: ' ',
-  host: { class: CLASS_NAME.BACKDROP }
+  template: `
+    <div class="modal-backdrop">
+      &nbsp;
+    </div>
+  `,
+  host: {
+    class: 'bs4'
+  }
 })
 export class ModalBackdropComponent implements OnInit {
+
+
   get isAnimated(): boolean {
     return this._isAnimated;
   }
@@ -29,24 +37,24 @@ export class ModalBackdropComponent implements OnInit {
     this._isShown = value;
     if (value) {
       this.renderer.addClass(
-        this.element.nativeElement,
+        this.backdropDiv,
         `${CLASS_NAME.IN}`
       );
     } else {
       this.renderer.removeClass(
-        this.element.nativeElement,
+        this.backdropDiv,
         `${CLASS_NAME.IN}`
       );
     }
     if (!isBs3()) {
       if (value) {
         this.renderer.addClass(
-          this.element.nativeElement,
+          this.backdropDiv,
           `${CLASS_NAME.SHOW}`
         );
       } else {
         this.renderer.removeClass(
-          this.element.nativeElement,
+          this.backdropDiv,
           `${CLASS_NAME.SHOW}`
         );
       }
@@ -55,6 +63,7 @@ export class ModalBackdropComponent implements OnInit {
 
   element: ElementRef;
   renderer: Renderer2;
+  backdropDiv: HTMLDivElement;
 
   protected _isAnimated: boolean;
   protected _isShown = false;
@@ -65,12 +74,13 @@ export class ModalBackdropComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.backdropDiv = this.element.nativeElement.querySelector('.modal-backdrop');
     if (this.isAnimated) {
       this.renderer.addClass(
-        this.element.nativeElement,
+        this.backdropDiv,
         `${CLASS_NAME.FADE}`
       );
-      Utils.reflow(this.element.nativeElement);
+      Utils.reflow(this.backdropDiv);
     }
     this.isShown = true;
   }

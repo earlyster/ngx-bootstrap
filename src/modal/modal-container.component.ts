@@ -18,16 +18,16 @@ import { isBs3 } from '../utils/theme-provider';
 @Component({
   selector: 'modal-container',
   template: `
-    <div [class]="'modal-dialog' + (config.class ? ' ' + config.class : '')" role="document">
-      <div class="modal-content">
-        <ng-content></ng-content>
+    <div class="modal" role="dialog" tabindex="-1">
+      <div [class]="'modal-dialog' + (config.class ? ' ' + config.class : '')" role="document">
+        <div class="modal-content">
+          <ng-content></ng-content>
+        </div>
       </div>
     </div>
   `,
   host: {
-    class: 'modal',
-    role: 'dialog',
-    tabindex: '-1'
+    class: 'bs4'
   }
 })
 export class ModalContainerComponent implements OnInit, OnDestroy {
@@ -35,6 +35,8 @@ export class ModalContainerComponent implements OnInit, OnDestroy {
   isShown = false;
   level: number;
   isAnimated: boolean;
+  modalDiv: HTMLElement;
+
   private isModalHiding = false;
 
   constructor(options: ModalOptions,
@@ -45,21 +47,22 @@ export class ModalContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.modalDiv =  this._element.nativeElement.querySelector('.modal');
     if (this.isAnimated) {
       this._renderer.addClass(
-        this._element.nativeElement,
+        this.modalDiv,
         CLASS_NAME.FADE
       );
     }
     this._renderer.setStyle(
-      this._element.nativeElement,
+      this.modalDiv,
       'display',
       'block'
     );
     setTimeout(() => {
       this.isShown = true;
       this._renderer.addClass(
-        this._element.nativeElement,
+        this.modalDiv,
         isBs3() ? CLASS_NAME.IN : CLASS_NAME.SHOW
       );
     }, this.isAnimated ? TRANSITION_DURATIONS.BACKDROP : 0);
@@ -77,7 +80,7 @@ export class ModalContainerComponent implements OnInit, OnDestroy {
     if (
       this.config.ignoreBackdropClick ||
       this.config.backdrop === 'static' ||
-      event.target !== this._element.nativeElement
+      event.target !== this.modalDiv
     ) {
       return;
     }
@@ -108,7 +111,7 @@ export class ModalContainerComponent implements OnInit, OnDestroy {
     }
     this.isModalHiding = true;
     this._renderer.removeClass(
-      this._element.nativeElement,
+      this.modalDiv,
       isBs3() ? CLASS_NAME.IN : CLASS_NAME.SHOW
     );
     setTimeout(() => {

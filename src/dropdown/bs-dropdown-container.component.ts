@@ -4,9 +4,12 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  Renderer2
+  Renderer2,
+  HostBinding
 } from '@angular/core';
 import { BsDropdownState } from './bs-dropdown.state';
+import { isBs3 } from '../utils/theme-provider';
+
 
 @Component({
   selector: 'bs-dropdown-container',
@@ -22,6 +25,7 @@ import { BsDropdownState } from './bs-dropdown.state';
   `
 })
 export class BsDropdownContainerComponent implements OnDestroy {
+
   isOpen = false;
 
   get direction(): 'down' | 'up' {
@@ -38,6 +42,9 @@ export class BsDropdownContainerComponent implements OnDestroy {
   ) {
     this._subscription = _state.isOpenChange.subscribe((value: boolean) => {
       this.isOpen = value;
+      const elem = _element.nativeElement;
+      // for now defaulting to bootstrap4 since bootstrap 4 is encapsulated in my use case
+      elem.className += ' bs4';
       const dropdown = _element.nativeElement.querySelector('.dropdown-menu');
       if (dropdown) {
         this._renderer.addClass(dropdown, 'show');
